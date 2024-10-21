@@ -16,6 +16,8 @@ public class PhotoComponent extends JComponent {
     private Point typingClickedPosition;
     private boolean isTyping = false;
 
+    private boolean showAnnotations = false;
+
     public PhotoComponent(Image image) {
         this.image = image;
         this.isTurned = false;
@@ -31,6 +33,7 @@ public class PhotoComponent extends JComponent {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) {
+                    showAnnotations = !showAnnotations;
                     isTurned = !isTurned;
                     isTyping = false;
                     repaint();
@@ -86,19 +89,18 @@ public class PhotoComponent extends JComponent {
 
         Graphics2D g2d = (Graphics2D) g;
 
-        if (isTurned) {
-            g2d.setColor(Color.WHITE);
-            g2d.fillRect(0, 0, getWidth(), getHeight());
-
-            draw(g2d);
-            typeText(g2d);
-        } else {
-            if (image != null) {
-                g2d.setColor(Color.PINK);
-                g2d.fillRect(0, 0, getWidth(), getHeight());
-                g2d.drawImage(image, 0, 0, getWidth(), getHeight(), this);
-            }
+        if (image != null) {
+            g2d.drawImage(image, 0, 0, getWidth(), getHeight(), this);
         }
+
+        if (showAnnotations) {
+            drawAnnotations(g2d);
+        }
+    }
+
+    private void drawAnnotations(Graphics2D g2d) {
+        draw(g2d);
+        typeText(g2d);
     }
 
     private void typeText(Graphics2D g2d) {
