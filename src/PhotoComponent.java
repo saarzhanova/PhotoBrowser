@@ -18,12 +18,21 @@ public class PhotoComponent extends JComponent {
 
     private boolean showAnnotations = false;
 
+    private List<Annotation> annotations;
+    private Annotation currentAnnotation;
+    private Annotation selectedAnnotation;
+    private Point lastDragPoint;
+    private boolean isDrawing = false;
+
     public PhotoComponent(Image image) {
         this.image = image;
         this.isTurned = false;
         this.drawnStrokes = new ArrayList<>();
         this.typedCharacters = new ArrayList<>();
         this.typedCharPositions = new ArrayList<>();
+
+        this.annotations = new ArrayList<>();
+        this.currentAnnotation = null;
 
         if (image != null) {
             setPreferredSize(new Dimension(image.getWidth(this), image.getHeight(this)));
@@ -34,25 +43,62 @@ public class PhotoComponent extends JComponent {
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) {
                     showAnnotations = !showAnnotations;
-                    isTurned = !isTurned;
-                    isTyping = false;
+//                    isTurned = !isTurned;
+//                    isTyping = false;
                     repaint();
-                    System.out.println(isTurned);
-                } else if (isTurned) {
-                    isTyping = true;
-                    typingClickedPosition = e.getPoint();
-                    repaint();
-                    requestFocusInWindow();
+                    System.out.println("Annotation is " +  showAnnotations);
+//                } else if (isTurned) {
+//                    isTyping = true;
+//                    typingClickedPosition = e.getPoint();
+//                    repaint();
+//                    requestFocusInWindow();
                 }
-                System.out.println(isTyping);
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                // check if clicked on annotation
+                selectedAnnotation = findAnnotationAt(e.getPoint());
+                if (selectedAnnotation != null) {
+                    lastDragPoint = e.getPoint();  // prepare to move
+                } else {
+                    // start drawing
+                    if (showAnnotations) {
+                        currentAnnotation = new Annotation(new ArrayList<>(), Color.BLACK);
+                        currentAnnotation.getPoints().add(e.getPoint());
+                        isDrawing = true;
+                    }
+                }
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                if (isDrawing && currentAnnotation != null) {
+                    // stop drawing and add annotation to the list
+                    annotations.add(currentAnnotation);
+                    currentAnnotation = null;
+                    isDrawing = false;
+                }
             }
         });
 
         addMouseMotionListener(new MouseAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
-                if (isTurned) {
-                    drawnStrokes.add(e.getPoint());
+//                if (isTurned) {
+//                    drawnStrokes.add(e.getPoint());
+//                    repaint();
+//                }
+                if (isDrawing && currentAnnotation != null) {
+                    // drawing
+                    currentAnnotation.getPoints().add(e.getPoint());
+                    repaint();
+                } else if (showAnnotations && selectedAnnotation != null) {
+                    // move annotation
+                    int dx = e.getX() - lastDragPoint.x;
+                    int dy = e.getY() - lastDragPoint.y;
+                    selectedAnnotation.move(dx, dy);
+                    lastDragPoint = e.getPoint();
                     repaint();
                 }
             }
@@ -94,7 +140,14 @@ public class PhotoComponent extends JComponent {
         }
 
         if (showAnnotations) {
-            drawAnnotations(g2d);
+            // draw all prev annotations
+            for (Annotation annotation : annotations) {
+                annotation.draw(g2d);
+            }
+            // draw current annotation if exists
+            if (currentAnnotation != null) {
+                currentAnnotation.draw(g2d);
+            }
         }
     }
 
@@ -120,6 +173,15 @@ public class PhotoComponent extends JComponent {
         for (Point point : drawnStrokes) {
             g2d.fillOval(point.x, point.y, 5, 5);
         }
+    }
+
+    private Annotation findAnnotationAt(Point p) {
+        for (Annotation annotation : annotations) {
+            if (annotation.contains(p)) {
+                return annotation;
+            }
+        }
+        return null;
     }
 
     private void updateTypingClickedPosition(char typedChar) {
