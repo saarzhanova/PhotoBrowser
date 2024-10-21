@@ -24,6 +24,8 @@ public class PhotoComponent extends JComponent {
     private Point lastDragPoint;
     private boolean isDrawing = false;
 
+    private Color selectedColor = Color.BLACK;
+
     public PhotoComponent(Image image) {
         this.image = image;
         this.isTurned = false;
@@ -52,6 +54,9 @@ public class PhotoComponent extends JComponent {
 //                    typingClickedPosition = e.getPoint();
 //                    repaint();
 //                    requestFocusInWindow();
+                } else if (e.getClickCount() == 1) {
+                    selectedAnnotation = findAnnotationAt(e.getPoint());
+                    repaint();
                 }
             }
 
@@ -147,6 +152,12 @@ public class PhotoComponent extends JComponent {
             // draw current annotation if exists
             if (currentAnnotation != null) {
                 currentAnnotation.draw(g2d);
+            }
+            // highlight selected annotation
+            if (selectedAnnotation != null) {
+                g2d.setColor(Color.BLUE);
+                Rectangle bounds = selectedAnnotation.getBounds();
+                g2d.drawRect(bounds.x, bounds.y, bounds.width, bounds.height);
             }
         }
     }
