@@ -7,20 +7,16 @@ import java.awt.Dimension;
 public class PhotoBrowser {
     private JFrame frame;
     private JLabel statusBar;
-
     private PhotoBrowserModel model;
     private PhotoBrowserView view;
     private PhotoBrowserController controller;
-
-    private PhotoComponent photoComponent;
-    private Color selectedColor = Color.BLACK;
 
     public PhotoBrowser() {
         frame = new JFrame("PhotoBrowser");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(new BorderLayout());
-        frame.setPreferredSize(new Dimension(800, 600));
-        frame.setMinimumSize(new Dimension(400, 300));
+        frame.setPreferredSize(new Dimension(800, 500));
+        frame.setMinimumSize(new Dimension(800, 500));
 
         JPanel mainPanel = new JPanel();
 
@@ -186,16 +182,22 @@ public class PhotoBrowser {
     }
 
     private void changeAnnotationColor() {
-        PhotoComponent photoComponent = view.getCurrentPhotoComponent(); // Access the current photo component
-        if (photoComponent != null) {
+        PhotoComponent photoComponent = view.getCurrentPhotoComponent();
+        boolean isPhotoComponent = photoComponent != null;
+
+        if (isPhotoComponent) {
             Annotation selectedAnnotation = photoComponent.getSelectedAnnotation();
-            if (selectedAnnotation != null) {
-                Color newColor = JColorChooser.showDialog(frame, "Choose Annotation Color", Color.BLACK);
-                if (newColor != null) {
-                    photoComponent.changeSelectedAnnotationColor(newColor); // Change the annotation color
+            boolean isSelectedAnnotation = selectedAnnotation != null;
+
+            if (isSelectedAnnotation) {
+                Color newColor = JColorChooser.showDialog(frame, "Choose Color", Color.BLACK);
+                boolean isColorChosen = newColor != null;
+
+                if (isColorChosen) {
+                    photoComponent.changeSelectedAnnotationColor(newColor);
                 }
             } else {
-                JOptionPane.showMessageDialog(frame, "No annotation selected.");
+                JOptionPane.showMessageDialog(frame, "No drawing selected.");
             }
         }
     }

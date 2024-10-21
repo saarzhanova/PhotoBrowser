@@ -44,16 +44,14 @@ public class Annotation {
 
     public Rectangle getBounds() {
         if (points.isEmpty()) {
-            return new Rectangle(0, 0, 0, 0);  // Return an empty rectangle if there are no points
+            return new Rectangle(0, 0, 0, 0);
         }
 
-        // Initialize min and max values with the first point
         int minX = points.get(0).x;
         int minY = points.get(0).y;
         int maxX = points.get(0).x;
         int maxY = points.get(0).y;
 
-        // Iterate over all points to find the min and max coordinates
         for (Point point : points) {
             if (point.x < minX) {
                 minX = point.x;
@@ -69,7 +67,6 @@ public class Annotation {
             }
         }
 
-        // Create and return the rectangle that bounds the annotation
         return new Rectangle(minX, minY, maxX - minX, maxY - minY);
     }
 }

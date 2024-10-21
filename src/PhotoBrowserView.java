@@ -12,17 +12,22 @@ public class PhotoBrowserView {
 
     public void updatePhotos(List<String> photoPaths) {
         photoPanel.removeAll();
+
         for (String path : photoPaths) {
             ImageIcon image = new ImageIcon(path);
-//            PhotoComponent photoComponent = new PhotoComponent(image.getImage());
-//            photoComponent.requestFocusInWindow();
-            currentPhotoComponent = new PhotoComponent(image.getImage()); // Store current photo component
-            currentPhotoComponent.requestFocusInWindow();
-            photoPanel.add(currentPhotoComponent);
+            storeCurrentPhotoComponent(image);
         }
+
         photoPanel.revalidate();
         photoPanel.repaint();
     }
+
+    private void storeCurrentPhotoComponent(ImageIcon image) {
+        currentPhotoComponent = new PhotoComponent(image.getImage());
+        currentPhotoComponent.requestFocusInWindow();
+        photoPanel.add(currentPhotoComponent);
+    }
+
     public PhotoComponent getCurrentPhotoComponent() {
         return currentPhotoComponent;
     }
