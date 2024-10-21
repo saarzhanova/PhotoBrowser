@@ -213,4 +213,15 @@ public class PhotoComponent extends JComponent {
             typingClickedPosition = new Point(lastPosition.x + 7, lastPosition.y); // number 7 helps avoiding letters to overlap
         }
     }
+
+    public Annotation getSelectedAnnotation() {
+        return selectedAnnotation;
+    }
+
+    public void changeSelectedAnnotationColor(Color newColor) {
+        if (selectedAnnotation != null) {
+            selectedAnnotation.setColor(newColor);
+            repaint();
+        }
+    }
 }

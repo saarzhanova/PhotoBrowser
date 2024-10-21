@@ -12,6 +12,9 @@ public class PhotoBrowser {
     private PhotoBrowserView view;
     private PhotoBrowserController controller;
 
+    private PhotoComponent photoComponent;
+    private Color selectedColor = Color.BLACK;
+
     public PhotoBrowser() {
         frame = new JFrame("PhotoBrowser");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -143,10 +146,19 @@ public class PhotoBrowser {
         JToolBar toolBar = new JToolBar(JToolBar.VERTICAL);
         frame.add(toolBar, BorderLayout.WEST);
 
+        JButton colorButton = new JButton("Change Color");
+        colorButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                changeAnnotationColor();
+            }
+        });
+
         JToggleButton peopleButton = new JToggleButton("People");
         JToggleButton placesButton = new JToggleButton("Places");
         JToggleButton schoolButton = new JToggleButton("School");
 
+        toolBar.add(colorButton);
         toolBar.add(peopleButton);
         toolBar.add(placesButton);
         toolBar.add(schoolButton);
@@ -171,6 +183,21 @@ public class PhotoBrowser {
                 activateSchoolButton();
             }
         });
+    }
+
+    private void changeAnnotationColor() {
+        PhotoComponent photoComponent = view.getCurrentPhotoComponent(); // Access the current photo component
+        if (photoComponent != null) {
+            Annotation selectedAnnotation = photoComponent.getSelectedAnnotation();
+            if (selectedAnnotation != null) {
+                Color newColor = JColorChooser.showDialog(frame, "Choose Annotation Color", Color.BLACK);
+                if (newColor != null) {
+                    photoComponent.changeSelectedAnnotationColor(newColor); // Change the annotation color
+                }
+            } else {
+                JOptionPane.showMessageDialog(frame, "No annotation selected.");
+            }
+        }
     }
 
     private boolean isPeopleSelected = false;

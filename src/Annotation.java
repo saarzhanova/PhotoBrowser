@@ -11,6 +11,10 @@ public class Annotation {
         this.color = color;
     }
 
+    public void setColor(Color color) {
+        this.color = color;
+    }
+
     public List<Point> getPoints() {
         return points;
     }
